@@ -25,7 +25,7 @@ main{
 
 header{
     display:flex;
-    width: 360px;
+    width: 400px;
     justify-content:space-between;
     margin-bottom:30px;
 }
@@ -64,8 +64,8 @@ header{
 
 #board{
     display:grid;
-    grid-template-columns: repeat(3,110px);
-    grid-template-rows: repeat(3,110px);
+    grid-template-columns: repeat(3,130px);
+    grid-template-rows: repeat(3,130px);
     gap:12px;
 }
 
@@ -106,7 +106,7 @@ header{
     background: #2a2343;
 }
 
-h2{
+p{
     position:relative;
     top:35%;
     
@@ -126,8 +126,8 @@ h2{
     cursor:pointer;
     transition:0.3s;
     height:80px;
-    width: 175px;
-    font-size: 15.5px;
+    width: 190px;
+    font-size: 17px;
     font-weight: bold;
 }
 
@@ -147,8 +147,41 @@ h2{
 
 #title{
    color:#E5E7EB;
-   font-weight:bolder;
+   font-weight:900;
+   font-size:31px;
+   top: 20px;
 }
+
+@media(max-width:450px){
+    #board{
+        grid-template-columns: repeat(3,80px);
+        grid-template-rows: repeat(3,80px);
+    }
+    header{
+        width:280px;
+    }
+
+    .mode-btn{
+        width:130px;
+        height:60px;
+    }
+    .pvc{
+        font-size:13.5;
+    }
+    .player{
+        width:75px;
+        height:60px;
+        font-size:32px;
+    }
+    #title{
+        font-size:28px;
+        top:10px;
+        font-weight:700;
+
+    }
+}
+    
+
     </style>
 </head>
 <body>
@@ -165,7 +198,7 @@ h2{
         <header>
             
             <div class="player player-active" id="Xdisplay" onclick="choosePlayer('X')">X</div>
-            <h2 id="title">Choose</h2>
+            <p id="title">Choose</p>
             <div class="player" id="Odisplay" onclick="choosePlayer('O')">O</div>
         </header>
 
