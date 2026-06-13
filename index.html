@@ -25,9 +25,14 @@ main{
 
 header{
     display:flex;
-    width: 400px;
+    width:400px;
     justify-content:space-between;
+    align-items:center;   /* add this */
     margin-bottom:30px;
+}
+
+p{
+    position:static;      /* remove top:35% */
 }
 
 .player{
@@ -106,11 +111,6 @@ header{
     background: #2a2343;
 }
 
-p{
-    position:relative;
-    top:35%;
-    
-}
 #mode-selector{
     display:flex;
     gap:10px;
@@ -152,32 +152,70 @@ p{
    top: 20px;
 }
 
-@media(max-width:450px){
-    #board{
-        grid-template-columns: repeat(3,80px);
-        grid-template-rows: repeat(3,80px);
+@media (max-width: 450px){
+
+    main{
+        padding:15px;
     }
-    header{
-        width:280px;
+
+    #mode-selector{
+        width:100%;
+        flex-direction:column;
+        align-items:center;
+        gap:12px;
     }
 
     .mode-btn{
-        width:130px;
-        height:60px;
+        width:90%;
+        max-width:280px;
+        height:55px;
+        font-size:15px;
     }
-    .pvc{
-        font-size:13.5;
+
+    header{
+        width:100%;
+        max-width:320px;
+        align-items:center;
+        margin-bottom:20px;
     }
+
     .player{
-        width:75px;
-        height:60px;
+        width:70px;
+        height:70px;
         font-size:32px;
     }
-    #title{
-        font-size:28px;
-        top:10px;
-        font-weight:700;
 
+    #title{
+        position:static;
+        font-size:22px;
+        font-weight:700;
+        text-align:center;
+    }
+
+    p{
+        position:static;
+    }
+
+    #board{
+        width:95vw;
+        max-width:330px;
+        gap:8px;
+
+        grid-template-columns:repeat(3,1fr);
+        grid-template-rows:repeat(3,1fr);
+
+        aspect-ratio:1/1;
+    }
+
+    .cell{
+        font-size:42px;
+        aspect-ratio:1/1;
+    }
+
+    #restart{
+        width:95vw;
+        max-width:330px;
+        margin-top:20px;
     }
 }
     
