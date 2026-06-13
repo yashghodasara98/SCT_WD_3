@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        *{
+    margin:0;
+    box-sizing: border-box;
+    font-family: 'Poppins',sans-serif;
+    user-select:none;
+    color:white;
+}
+
+main{
+    Background: #0A0519;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+header{
+    display:flex;
+    width: 400px;
+    justify-content:space-between;
+    margin-bottom:30px;
+}
+
+.player{
+    background: #17122A ;
+    width: 120px;
+    height: 90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 45px;
+    font-weight: bold;
+    Cursor:pointer;
+    Border-radius:12px;
+    border: 4px solid #17122A;
+    opacity: 0.5;
+    transition:0.3s;
+}
+
+.player:hover{
+    border:solid 4px #2a2343;
+}
+.player-active{
+    opacity:1;
+    border:solid 4px #2a2343;
+}
+
+#Xdisplay{
+    color:#1892EA;
+}
+
+#Odisplay{
+    color: #A737FF;
+}
+
+#board{
+    display:grid;
+    grid-template-columns: repeat(3,130px);
+    grid-template-rows: repeat(3,130px);
+    gap:12px;
+}
+
+.cell{
+    background: #17122A;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 55px;
+    font-weight: bold;
+    cursor:pointer;
+    transition:0.3s background;
+}
+
+.cell:hover{
+    background: #2a2343;
+}
+
+#restart{
+    margin-top: 30px;
+    width: 294px;
+    background: #17122A;
+    border: 4px solid #17122A;
+    transition:0.3s;
+    padding-top:10px;
+    padding-bottom:10px;
+    border:none;
+    border-radius:12px;
+    font-weight: 600;
+    font-size:16px;
+    cursor:pointer;
+    transition: 0.3s background;
+    visibility:hidden;
+}
+
+#restart:hover{
+    background: #2a2343;
+}
+
+h2{
+    position:relative;
+    top:35%;
+    
+}
+#mode-selector{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.mode-btn{
+    background:#17122A;
+    border:none;
+    color:white;
+    padding:5px 10px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:0.3s;
+    height:80px;
+    width: 190px;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.mode-btn:hover{
+    background:#2a2343;
+}
+
+.mode-btn.active{
+    border:solid 4px #2a2343;
+}
+.pvp{
+    color: #A737FF;
+}
+.pvc{
+    color:#1892EA;
+}
+
+#title{
+   color:#E5E7EB;
+   font-weight:bolder;
+}
+    </style>
+</head>
+<body>
+    <main>
+        <div id="mode-selector">
+    <button class="mode-btn active pvp" onclick="setMode('pvp')">
+        Player vs Player
+    </button>
+
+    <button class="mode-btn pvc" onclick="setMode('pvc')">
+        Player vs Computer
+    </button>
+</div>
+        <header>
+            
+            <div class="player player-active" id="Xdisplay" onclick="choosePlayer('X')">X</div>
+            <h2 id="title">Choose</h2>
+            <div class="player" id="Odisplay" onclick="choosePlayer('O')">O</div>
+        </header>
+
+        <div id="board">
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+        </div>
+
+        <button id="restart">Restart</button>
+    </main>
+
+    <script>
+const cells = document.querySelectorAll(".cell");
+const title = document.getElementById("title");
+const Xdisplay = document.getElementById("Xdisplay");
+const Odisplay = document.getElementById("Odisplay");
+const restart = document.getElementById("restart");
+
+let gameMode = "pvp";
+let currentPlayer = "X";
+let gameOver = false;
+let gameStarted = false;
+
+const board = Array(9).fill("");
+
+const winConditions = [
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    [0,4,8],
+    [2,4,6]
+];
+
+// -------------------------
+// MODE SELECTION
+// -------------------------
+
+document.querySelectorAll(".mode-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document
+            .querySelectorAll(".mode-btn")
+            .forEach(b => b.classList.remove("active"));
+
+        btn.classList.add("active");
+
+        gameMode = btn.textContent.includes("Computer")
+            ? "pvc"
+            : "pvp";
+
+        resetGame();
+    });
+});
+
+// -------------------------
+// BOARD EVENTS
+// -------------------------
+
+cells.forEach((cell, index) => {
+    cell.addEventListener("click", () => handleMove(cell, index));
+});
+
+function handleMove(cell, index) {
+
+    if (
+        board[index] !== "" ||
+        gameOver
+    ) return;
+
+    gameStarted = true;
+
+    placeMark(cell, index);
+
+    if (checkWinner()) return;
+
+    switchPlayer();
+
+    if (gameMode === "pvc" && currentPlayer === "O") {
+        computerMove();
+    }
+}
+
+// -------------------------
+// PLACE MARK
+// -------------------------
+
+function placeMark(cell, index) {
+
+    board[index] = currentPlayer;
+    cell.textContent = currentPlayer;
+
+    cell.style.color =
+        currentPlayer === "X"
+        ? "#1892EA"
+        : "#A737FF";
+}
+
+// -------------------------
+// SWITCH PLAYER
+// -------------------------
+
+function switchPlayer() {
+
+    currentPlayer =
+        currentPlayer === "X"
+        ? "O"
+        : "X";
+
+    updateTurnDisplay();
+}
+
+function updateTurnDisplay() {
+    title.textContent = `${currentPlayer}'s Turn`;
+}
+
+// -------------------------
+// COMPUTER MOVE
+// -------------------------
+
+function computerMove() {
+
+    setTimeout(() => {
+
+        const empty = [];
+
+        board.forEach((value, index) => {
+            if (value === "") {
+                empty.push(index);
+            }
+        });
+
+        if (!empty.length || gameOver) return;
+
+        // Center priority
+        if (board[4] === "") {
+            makeComputerMove(4);
+            return;
+        }
+
+        const randomIndex =
+            empty[Math.floor(Math.random() * empty.length)];
+
+        makeComputerMove(randomIndex);
+
+    }, 500);
+}
+
+function makeComputerMove(index) {
+
+    placeMark(cells[index], index);
+
+    if (checkWinner()) return;
+
+    switchPlayer();
+}
+
+// -------------------------
+// WIN CHECK
+// -------------------------
+
+function checkWinner() {
+
+    for (const [a,b,c] of winConditions) {
+
+        if (
+            board[a] &&
+            board[a] === board[b] &&
+            board[a] === board[c]
+        ) {
+
+            gameOver = true;
+
+            cells[a].style.background = "#2a2343";
+            cells[b].style.background = "#2a2343";
+            cells[c].style.background = "#2a2343";
+
+            title.textContent =
+                `${currentPlayer} Wins!`;
+
+            restart.style.visibility = "visible";
+
+            return true;
+        }
+    }
+
+    if (board.every(cell => cell !== "")) {
+
+        gameOver = true;
+
+        title.textContent = "Draw!";
+
+        restart.style.visibility = "visible";
+
+        return true;
+    }
+
+    return false;
+}
+
+// -------------------------
+// PLAYER CHOICE
+// -------------------------
+
+function choosePlayer(player) {
+
+    if (gameStarted) return;
+
+    currentPlayer = player;
+
+    Xdisplay.classList.toggle(
+        "player-active",
+        player === "X"
+    );
+
+    Odisplay.classList.toggle(
+        "player-active",
+        player === "O"
+    );
+
+    updateTurnDisplay();
+}
+
+// -------------------------
+// RESET
+// -------------------------
+
+restart.addEventListener("click", resetGame);
+
+function resetGame() {
+
+    board.fill("");
+
+    gameOver = false;
+    gameStarted = false;
+
+    currentPlayer = "X";
+
+    cells.forEach(cell => {
+        cell.textContent = "";
+        cell.style.background = "#17122A";
+    });
+
+    Xdisplay.classList.add("player-active");
+    Odisplay.classList.remove("player-active");
+
+    title.textContent = "X's Turn";
+
+    restart.style.visibility = "hidden";
+}
+
+
+
+    </script>
+    
+</body>
+</html>
